@@ -1,0 +1,17 @@
+# .NET
+api/bin/
+api/obj/
+api/appsettings.Development.json
+api/*.user
+api.tests/bin/
+api.tests/obj/
+
+# Node
+web/node_modules/
+web/dist/
+web/.env.local
+web/.env*.local
+
+# OS
+.DS_Store
+Thumbs.db
