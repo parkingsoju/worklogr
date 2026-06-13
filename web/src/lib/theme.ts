@@ -3,7 +3,10 @@ import { accents, type AccentScale } from './accents'
 
 const config: ThemeConfig = {
   initialColorMode: 'system',
-  useSystemColorMode: true,
+  // false: 'system' is only the first-load default. A manual Light/Dark choice
+  // (Settings) is then stored and persists. true would keep following the OS and
+  // snap the manual choice back to system on reload.
+  useSystemColorMode: false,
 }
 
 const gray = {
