@@ -8,6 +8,7 @@ import { theme, makeTheme } from './lib/theme'
 import { accentScale } from './lib/accents'
 import { queryClient, setErrorNotifier } from './lib/queryClient'
 import { useCurrentUser } from './hooks/useCurrentUser'
+import { useThemeSync } from './hooks/useTheme'
 
 const router = createRouter({ routeTree, trailingSlash: 'never' })
 
@@ -39,6 +40,12 @@ function ToastBridge() {
   return null
 }
 
+// Applies the user's saved theme (light/dark/system) on load so it follows across devices.
+function ThemeSync() {
+  useThemeSync()
+  return null
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
@@ -46,6 +53,7 @@ createRoot(document.getElementById('root')!).render(
       <ThemedChakraProvider>
         <RouterProvider router={router} />
         <ToastBridge />
+        <ThemeSync />
       </ThemedChakraProvider>
     </QueryClientProvider>
   </StrictMode>,

@@ -7,7 +7,6 @@ import {
   Alert, AlertIcon, Box, Button, FormControl, FormLabel,
   Heading, HStack, Input, Radio, RadioGroup, Select, Stack, VStack,
 } from '@chakra-ui/react'
-import { useColorMode } from '@chakra-ui/react'
 import { Check } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCurrentUser, type CurrentUser } from '@/hooks/useCurrentUser'
@@ -33,7 +32,6 @@ const TIMEZONES = Intl.supportedValuesOf('timeZone')
 function SettingsPage() {
   const { data: me } = useCurrentUser()
   const qc = useQueryClient()
-  const { setColorMode } = useColorMode()
 
   const update = useMutation({
     mutationFn: (data: SettingsInput) => api.patch('/api/users/me', {
@@ -44,10 +42,8 @@ function SettingsPage() {
       theme: data.theme,
       accentColor: data.accentColor,
     }),
-    onSuccess: (updated) => {
-      qc.setQueryData(['me'], updated)
-      setColorMode(updated.theme === 'system' ? 'light' : updated.theme)
-    },
+    // ThemeSync (main.tsx) applies the new theme to color mode when the me cache updates.
+    onSuccess: (updated) => qc.setQueryData(['me'], updated),
   })
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<SettingsInput>({

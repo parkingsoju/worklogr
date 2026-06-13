@@ -7,6 +7,7 @@ import { Menu as MenuIcon, LayoutDashboard, List, Settings, LogOut, Moon, Sun } 
 import { queryClient } from '@/lib/queryClient'
 import { api, isApiError } from '@/lib/api'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { useSetTheme } from '@/hooks/useTheme'
 import { useLogout } from '@/hooks/useAuth'
 
 export const Route = createFileRoute('/_app')({
@@ -23,7 +24,8 @@ export const Route = createFileRoute('/_app')({
 
 function AppLayout() {
   const navigate = useNavigate()
-  const { colorMode, toggleColorMode } = useColorMode()
+  const { colorMode } = useColorMode()
+  const setTheme = useSetTheme()
   const mobileNav = useDisclosure()
   const { data: me } = useCurrentUser()
   const logout = useLogout()
@@ -89,7 +91,7 @@ function AppLayout() {
               icon={colorMode === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
               size="xs" variant="ghost" color="text.subtle"
               _hover={{ color: 'text.primary' }}
-              onClick={toggleColorMode}
+              onClick={() => setTheme(colorMode === 'dark' ? 'light' : 'dark')}
             />
           </Flex>
           <Button
