@@ -5,7 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 import { theme } from './lib/theme'
-import { queryClient } from './lib/queryClient'
+import { queryClient, ToastContainer } from './lib/queryClient'
 
 const router = createRouter({ routeTree, trailingSlash: 'never' })
 
@@ -19,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
     <ChakraProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
+        <ToastContainer />
       </QueryClientProvider>
     </ChakraProvider>
   </StrictMode>,
