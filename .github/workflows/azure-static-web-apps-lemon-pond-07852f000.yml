@@ -22,8 +22,9 @@ jobs:
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
-        env:
-          VITE_API_URL: https://worklogr-api-hxdhdmc2dhcfeyam.southeastasia-01.azurewebsites.net
+        # VITE_API_URL intentionally unset → frontend uses relative /api/* paths.
+        # SWA proxies /api/* to the linked App Service backend (same origin),
+        # so the auth cookie is first-party (works in incognito/Safari).
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LEMON_POND_07852F000 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)

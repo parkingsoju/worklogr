@@ -7,13 +7,13 @@ public static class LogoutEndpoint
     public static void MapLogout(this IEndpointRouteBuilder app) =>
         app.MapPost("/api/auth/logout", (HttpContext ctx, IWebHostEnvironment env) =>
         {
-            // Must match the SameSite/Secure flags used when setting the cookie,
-            // otherwise browsers reject the Set-Cookie on cross-origin responses.
+            // Flags must match the ones used when setting the cookie, or the
+            // browser won't match and clear it. See LoginEndpoint for rationale.
             ctx.Response.Cookies.Delete(CookieName, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = !env.IsDevelopment(),
-                SameSite = env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.None,
+                SameSite = SameSiteMode.Lax,
             });
             return Results.Ok();
         })

@@ -16,8 +16,10 @@ public static class LoginEndpoint
             {
                 HttpOnly = true,
                 Secure = !env.IsDevelopment(),
-                // Lax in dev (same-origin via Vite proxy); None in prod (cross-origin SWA→App Service)
-                SameSite = env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.None,
+                // Same-origin everywhere (Vite proxy in dev, SWA /api proxy in prod),
+                // so the cookie is first-party — Lax is correct and avoids the
+                // third-party blocking that SameSite=None hits in incognito/Safari.
+                SameSite = SameSiteMode.Lax,
                 Expires = DateTimeOffset.UtcNow.AddDays(double.Parse(config["Jwt:ExpiryDays"]!))
             });
             return Results.Ok(new { result.Id, result.Name, result.Email, result.Timezone });
