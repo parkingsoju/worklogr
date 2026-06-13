@@ -78,15 +78,7 @@ try
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
             };
-            // Read JWT from the HTTP-only cookie instead of Authorization header
-            opt.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = ctx =>
-                {
-                    ctx.Token = ctx.Request.Cookies["auth"];
-                    return Task.CompletedTask;
-                }
-            };
+            // JWT arrives as a standard Authorization: Bearer header (read by default).
         });
     builder.Services.AddAuthorization();
 

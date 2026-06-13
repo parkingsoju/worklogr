@@ -1,10 +1,14 @@
 import { useMutation } from '@tanstack/react-query'
-import { api } from '@/lib/api'
+import { api, setToken, clearToken } from '@/lib/api'
 import type { LoginInput, RegisterInput, ForgotPasswordInput, ResetPasswordInput } from '@/lib/validations/auth'
 
 export function useLogin() {
   return useMutation({
-    mutationFn: (data: LoginInput) => api.post('/api/auth/login', data),
+    mutationFn: async (data: LoginInput) => {
+      const res = await api.post('/api/auth/login', data)
+      setToken(res.token)
+      return res
+    },
   })
 }
 
@@ -17,6 +21,7 @@ export function useRegister() {
 export function useLogout() {
   return useMutation({
     mutationFn: () => api.post('/api/auth/logout'),
+    onSettled: () => clearToken(),
   })
 }
 
