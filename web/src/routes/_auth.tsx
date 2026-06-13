@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { createFileRoute, isRedirect, Outlet, redirect } from '@tanstack/react-router'
 import { Box, Container } from '@chakra-ui/react'
 import { queryClient } from '@/lib/queryClient'
 import { api } from '@/lib/api'
@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_auth')({
       await queryClient.fetchQuery({ queryKey: ['me'], queryFn: () => api.get('/api/auth/me'), staleTime: 60_000 })
       throw redirect({ to: '/' })
     } catch (e) {
-      if (e instanceof Response || (e as { _isRedirect?: boolean })?._isRedirect) throw e
+      if (isRedirect(e)) throw e
       // Not authenticated — allow through to auth pages
     }
   },

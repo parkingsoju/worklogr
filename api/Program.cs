@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -45,6 +46,14 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog();
+
+    // Trust X-Forwarded-For from Azure App Service reverse proxy
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
 
     // Database — retry on transient failures (handles Neon cold starts)
     builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -99,13 +108,18 @@ try
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
 
-    // Rate limiting (IP-based)
+    // Rate limiting (real client IP via X-Forwarded-For, resolved after UseForwardedHeaders)
     builder.Services.AddRateLimiter(opt =>
     {
-        opt.RejectionStatusCode = 429;
+        opt.OnRejected = async (ctx, ct) =>
+        {
+            ctx.HttpContext.Response.StatusCode = 429;
+            await ctx.HttpContext.Response.WriteAsJsonAsync(
+                new { status = 429, message = "Too many requests. Please try again later." }, ct);
+        };
         opt.AddPolicy("login", ctx => RateLimitPartition.GetFixedWindowLimiter(
             ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(1) }));
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
         opt.AddPolicy("register", ctx => RateLimitPartition.GetFixedWindowLimiter(
             ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromHours(1) }));
@@ -145,6 +159,7 @@ try
         app.MapScalarApiReference();
     }
 
+    app.UseForwardedHeaders();
     app.UseExceptionHandler();
     app.UseCors();
     app.UseRateLimiter();
