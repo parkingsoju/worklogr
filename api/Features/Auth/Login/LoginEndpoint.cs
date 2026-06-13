@@ -14,7 +14,8 @@ public static class LoginEndpoint
             {
                 HttpOnly = true,
                 Secure = !env.IsDevelopment(),
-                SameSite = SameSiteMode.Lax,
+                // Lax in dev (same-origin via Vite proxy); None in prod (cross-origin SWA→App Service)
+                SameSite = env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
             return Results.Ok(new { result.Id, result.Name, result.Email, result.Timezone });
