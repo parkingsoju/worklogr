@@ -1,9 +1,12 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
-import { createStandaloneToast } from '@chakra-ui/react'
-import { theme } from './theme'
 import { clearToken, isApiError } from './api'
 
-export const { ToastContainer, toast } = createStandaloneToast({ theme })
+// Error toast is bridged from inside the app's ChakraProvider (see ToastBridge in
+// main.tsx) rather than a standalone toast — a standalone toast spins up a second
+// Chakra context that injects its own `:root` CSS vars and overrides the app's
+// per-user accent. The MutationCache (outside React) calls this notifier instead.
+let errorNotifier: ((message: string) => void) | null = null
+export function setErrorNotifier(fn: ((message: string) => void) | null) { errorNotifier = fn }
 
 // Token expired mid-action: drop it and boot to /login. Returns true if handled,
 // so callers can skip showing an error for what is really a re-auth, not a failure.
@@ -38,9 +41,7 @@ export const queryClient = new QueryClient({
     onError: (error) => {
       if (bootIfUnauthorized(error)) return
       const message = error instanceof Error ? error.message : 'Something went wrong.'
-      if (!toast.isActive(message)) {
-        toast({ id: message, status: 'error', description: message, duration: 5000, isClosable: true })
-      }
+      errorNotifier?.(message)
     },
   }),
   defaultOptions: {

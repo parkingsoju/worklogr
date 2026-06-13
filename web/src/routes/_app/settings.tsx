@@ -10,7 +10,7 @@ import {
 import { useColorMode } from '@chakra-ui/react'
 import { Check } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { useCurrentUser, type CurrentUser } from '@/hooks/useCurrentUser'
 import { api } from '@/lib/api'
 import { ACCENTS } from '@/lib/accents'
 
@@ -141,7 +141,12 @@ function SettingsPage() {
                     type="button"
                     aria-label={a.label}
                     title={a.label}
-                    onClick={() => setValue('accentColor', a.key)}
+                    onClick={() => {
+                      setValue('accentColor', a.key)
+                      // Live preview: re-theme the app immediately. Save persists it;
+                      // navigating away without saving reverts on the next /me refetch.
+                      qc.setQueryData<CurrentUser>(['me'], prev => prev ? { ...prev, accentColor: a.key } : prev)
+                    }}
                     w="28px"
                     h="28px"
                     borderRadius="full"
