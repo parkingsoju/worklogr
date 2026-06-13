@@ -7,7 +7,7 @@ import { routeTree } from './routeTree.gen'
 import { theme } from './lib/theme'
 import { queryClient } from './lib/queryClient'
 
-const router = createRouter({ routeTree })
+const router = createRouter({ routeTree, trailingSlash: 'never' })
 
 declare module '@tanstack/react-router' {
   interface Register { router: typeof router }
