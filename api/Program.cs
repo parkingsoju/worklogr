@@ -130,19 +130,21 @@ try
 
     var app = builder.Build();
 
-    // Dev seed — runs only when DB is reachable; app still starts if Neon is suspended
-    if (app.Environment.IsDevelopment())
+    // Apply pending EF migrations on startup so every deploy keeps code and schema
+    // in sync (no manual `ef database update` step to forget). Then dev-seed.
+    // Best-effort + logged: a suspended Neon DB must not block the app from
+    // starting — the next restart re-attempts. Runs in all environments.
+    try
     {
-        try
-        {
-            using var scope = app.Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
+        if (app.Environment.IsDevelopment())
             await DevSeeder.SeedAsync(db);
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "DevSeeder skipped — database unreachable on startup");
-        }
+    }
+    catch (Exception ex)
+    {
+        Log.Warning(ex, "Startup DB migrate/seed skipped — database unreachable");
     }
 
     if (app.Environment.IsDevelopment())
