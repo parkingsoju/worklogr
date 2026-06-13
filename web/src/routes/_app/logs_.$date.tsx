@@ -84,8 +84,9 @@ function DailyLogDetailPage() {
           <SessionList
             sessions={log?.sessions ?? []}
             timezone={timezone}
-            onEdit={s => { if (log?.status === 'Draft') setEditTarget(s) }}
+            onEdit={s => setEditTarget(s)}
             onDelete={s => setDeleteTarget(s)}
+            isReadOnly={log?.status === 'Complete'}
           />
         )}
       </Box>

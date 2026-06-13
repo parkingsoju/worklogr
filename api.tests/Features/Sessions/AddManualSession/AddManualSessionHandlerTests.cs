@@ -70,4 +70,26 @@ public class AddManualSessionHandlerTests
         await act.Should().ThrowAsync<ConflictException>()
             .WithMessage("*overlaps*");
     }
+
+    [Fact]
+    public async Task Rejects_when_log_is_complete()
+    {
+        using var db = CreateDb();
+        var user = await SeedUser(db);
+        db.DailyLogs.Add(new DailyLog
+        {
+            Id = Guid.NewGuid(), UserId = user.Id, Date = new DateOnly(2026, 6, 11),
+            Status = DailyLogStatus.Complete,
+        });
+        await db.SaveChangesAsync();
+
+        var start = new DateTime(2026, 6, 11, 9, 0, 0, DateTimeKind.Utc);
+        var end = start.AddHours(3);
+
+        var handler = new AddManualSessionHandler(db, FakeUser(user.Id));
+        var act = () => handler.Handle(new AddManualSessionCommand(start, end, "Office", null), default);
+
+        await act.Should().ThrowAsync<ConflictException>()
+            .WithMessage("*marked complete*");
+    }
 }

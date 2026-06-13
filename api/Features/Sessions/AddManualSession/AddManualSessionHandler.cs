@@ -20,11 +20,13 @@ public class AddManualSessionHandler(AppDbContext db, ICurrentUser currentUser)
 
         var localDate = DailyLogService.LocalDateFor(cmd.StartTime, user.Timezone);
 
+        var log = await DailyLogService.GetOrCreateAsync(db, userId, localDate, ct);
+        if (log.Status == DailyLogStatus.Complete)
+            throw new ConflictException("This log is marked complete. Reopen it to make changes.");
+
         // Rule 6: no overlapping sessions
         if (await OverlapChecker.HasOverlapAsync(db, userId, localDate, cmd.StartTime, cmd.EndTime, ct: ct))
             throw new ConflictException("This session overlaps with an existing session.");
-
-        var log = await DailyLogService.GetOrCreateAsync(db, userId, localDate, ct);
 
         var session = new WorkSession
         {

@@ -7,9 +7,10 @@ interface Props {
   timezone: string
   onEdit: (session: SessionDto) => void
   onDelete: (session: SessionDto) => void
+  isReadOnly?: boolean
 }
 
-export function SessionList({ sessions, timezone, onEdit, onDelete }: Props) {
+export function SessionList({ sessions, timezone, onEdit, onDelete, isReadOnly }: Props) {
   if (sessions.length === 0) {
     return <Text fontSize="sm" color="gray.500">No completed sessions yet.</Text>
   }
@@ -19,7 +20,7 @@ export function SessionList({ sessions, timezone, onEdit, onDelete }: Props) {
       {sessions.map((s, i) => (
         <Box key={s.id}>
           {i > 0 && <Divider />}
-          <SessionItem session={s} timezone={timezone} onEdit={onEdit} onDelete={onDelete} />
+          <SessionItem session={s} timezone={timezone} onEdit={onEdit} onDelete={onDelete} isReadOnly={isReadOnly} />
         </Box>
       ))}
     </VStack>

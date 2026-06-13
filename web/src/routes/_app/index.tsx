@@ -163,19 +163,21 @@ function TodayPage() {
       <Box mb={5}>
         <Flex justify="space-between" align="center" mb={1}>
           <SectionLabel>Completed</SectionLabel>
-          <Button
-            size="xs"
-            variant="ghost"
-            leftIcon={<PlusCircle size={12} />}
-            color="text.subtle"
-            _hover={{ color: 'gray.700' }}
-            fontWeight="500"
-            fontSize="11px"
-            onClick={addModalDisclosure.onOpen}
-            data-testid="today-add-manually-btn"
-          >
-            Add manually
-          </Button>
+          {today?.status !== 'Complete' && (
+            <Button
+              size="xs"
+              variant="ghost"
+              leftIcon={<PlusCircle size={12} />}
+              color="text.subtle"
+              _hover={{ color: 'gray.700' }}
+              fontWeight="500"
+              fontSize="11px"
+              onClick={addModalDisclosure.onOpen}
+              data-testid="today-add-manually-btn"
+            >
+              Add manually
+            </Button>
+          )}
         </Flex>
 
         {(today?.sessions?.length ?? 0) === 0 && !today?.activeSession ? (
@@ -186,6 +188,7 @@ function TodayPage() {
             timezone={timezone}
             onEdit={s => setEditTarget(s)}
             onDelete={s => setDeleteTarget(s)}
+            isReadOnly={today?.status === 'Complete'}
           />
         )}
       </Box>
