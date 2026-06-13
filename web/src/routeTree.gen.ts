@@ -17,8 +17,8 @@ import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
-import { Route as AppLogsIndexRouteImport } from './routes/_app/logs/index'
-import { Route as AppLogsDateRouteImport } from './routes/_app/logs/$date'
+import { Route as AppLogsRouteImport } from './routes/_app/logs'
+import { Route as AppLogsDateRouteImport } from './routes/_app/logs_.$date'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -58,83 +58,83 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
-const AppLogsIndexRoute = AppLogsIndexRouteImport.update({
-  id: '/logs/',
-  path: '/logs/',
+const AppLogsRoute = AppLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
   getParentRoute: () => AppRoute,
 } as any)
 const AppLogsDateRoute = AppLogsDateRouteImport.update({
-  id: '/logs/$date',
+  id: '/logs_/$date',
   path: '/logs/$date',
   getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
+  '/logs': typeof AppLogsRoute
   '/settings': typeof AppSettingsRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/logs/$date': typeof AppLogsDateRoute
-  '/logs/': typeof AppLogsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
+  '/logs': typeof AppLogsRoute
   '/settings': typeof AppSettingsRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/logs/$date': typeof AppLogsDateRoute
-  '/logs': typeof AppLogsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/_auth': typeof AuthRouteWithChildren
+  '/_app/logs': typeof AppLogsRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_app/': typeof AppIndexRoute
-  '/_app/logs/$date': typeof AppLogsDateRoute
-  '/_app/logs/': typeof AppLogsIndexRoute
+  '/_app/logs_/$date': typeof AppLogsDateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/logs'
     | '/settings'
     | '/forgot-password'
     | '/login'
     | '/register'
     | '/reset-password'
     | '/logs/$date'
-    | '/logs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/logs'
     | '/settings'
     | '/forgot-password'
     | '/login'
     | '/register'
     | '/reset-password'
     | '/logs/$date'
-    | '/logs'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
+    | '/_app/logs'
     | '/_app/settings'
     | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/register'
     | '/_auth/reset-password'
     | '/_app/'
-    | '/_app/logs/$date'
-    | '/_app/logs/'
+    | '/_app/logs_/$date'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -200,15 +200,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/logs/': {
-      id: '/_app/logs/'
+    '/_app/logs': {
+      id: '/_app/logs'
       path: '/logs'
-      fullPath: '/logs/'
-      preLoaderRoute: typeof AppLogsIndexRouteImport
+      fullPath: '/logs'
+      preLoaderRoute: typeof AppLogsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/logs/$date': {
-      id: '/_app/logs/$date'
+    '/_app/logs_/$date': {
+      id: '/_app/logs_/$date'
       path: '/logs/$date'
       fullPath: '/logs/$date'
       preLoaderRoute: typeof AppLogsDateRouteImport
@@ -218,17 +218,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppLogsRoute: typeof AppLogsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppLogsDateRoute: typeof AppLogsDateRoute
-  AppLogsIndexRoute: typeof AppLogsIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppLogsRoute: AppLogsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
   AppLogsDateRoute: AppLogsDateRoute,
-  AppLogsIndexRoute: AppLogsIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
