@@ -1,4 +1,5 @@
-const BASE_URL = ''  // proxied via Vite to http://localhost:5059
+// Dev: empty (Vite proxy handles it). Prod: set VITE_API_URL build env var.
+const BASE_URL = import.meta.env.VITE_API_URL ?? ''
 
 async function handleResponse(res: Response) {
   if (res.ok) {
