@@ -9,6 +9,7 @@ export interface CurrentUser {
   defaultLocationType: string | null
   weekStartsOn: number
   theme: string
+  accentColor: string
 }
 
 export function useCurrentUser() {

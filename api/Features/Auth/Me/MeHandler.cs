@@ -12,6 +12,6 @@ public class MeHandler(AppDbContext db, ICurrentUser currentUser) : IRequestHand
     {
         var user = await db.Users.SingleOrDefaultAsync(u => u.Id == currentUser.Id, ct)
             ?? throw new NotFoundException("User not found.");
-        return new MeResult(user.Id, user.Name, user.Email, user.Timezone, user.DefaultLocationType, user.WeekStartsOn, user.Theme);
+        return new MeResult(user.Id, user.Name, user.Email, user.Timezone, user.DefaultLocationType, user.WeekStartsOn, user.Theme, user.AccentColor);
     }
 }

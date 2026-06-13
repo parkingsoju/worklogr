@@ -8,5 +8,6 @@ public record UpdateUserCommand(
     string? Timezone,
     string? DefaultLocationType,
     int? WeekStartsOn,
-    string? Theme
+    string? Theme,
+    string? AccentColor
 ) : IRequest<MeResult>;

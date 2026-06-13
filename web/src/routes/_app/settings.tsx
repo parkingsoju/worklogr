@@ -5,12 +5,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   Alert, AlertIcon, Box, Button, FormControl, FormLabel,
-  Heading, Input, Radio, RadioGroup, Select, Stack, VStack,
+  Heading, HStack, Input, Radio, RadioGroup, Select, Stack, VStack,
 } from '@chakra-ui/react'
 import { useColorMode } from '@chakra-ui/react'
+import { Check } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { api } from '@/lib/api'
+import { ACCENTS } from '@/lib/accents'
 
 export const Route = createFileRoute('/_app/settings')({
   component: SettingsPage,
@@ -22,6 +24,7 @@ const settingsSchema = z.object({
   defaultLocationType: z.string(),
   weekStartsOn: z.string(),
   theme: z.string(),
+  accentColor: z.string(),
 })
 type SettingsInput = z.infer<typeof settingsSchema>
 
@@ -39,6 +42,7 @@ function SettingsPage() {
       defaultLocationType: data.defaultLocationType,
       weekStartsOn: parseInt(data.weekStartsOn),
       theme: data.theme,
+      accentColor: data.accentColor,
     }),
     onSuccess: (updated) => {
       qc.setQueryData(['me'], updated)
@@ -48,7 +52,7 @@ function SettingsPage() {
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<SettingsInput>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: { name: '', timezone: 'UTC', defaultLocationType: 'None', weekStartsOn: '1', theme: 'system' },
+    defaultValues: { name: '', timezone: 'UTC', defaultLocationType: 'None', weekStartsOn: '1', theme: 'system', accentColor: 'teal' },
   })
 
   useEffect(() => {
@@ -58,12 +62,14 @@ function SettingsPage() {
       defaultLocationType: me.defaultLocationType ?? 'None',
       weekStartsOn: String(me.weekStartsOn),
       theme: me.theme,
+      accentColor: me.accentColor,
     })
   }, [me, reset])
 
   const theme = watch('theme')
   const defaultLoc = watch('defaultLocationType')
   const weekStart = watch('weekStartsOn')
+  const accentColor = watch('accentColor')
 
   return (
     <VStack gap={6} align="stretch">
@@ -121,6 +127,39 @@ function SettingsPage() {
                 <Radio value="dark">Dark</Radio>
               </Stack>
             </RadioGroup>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Accent color</FormLabel>
+            <HStack gap={3} wrap="wrap">
+              {ACCENTS.map(a => {
+                const selected = accentColor === a.key
+                return (
+                  <Box
+                    key={a.key}
+                    as="button"
+                    type="button"
+                    aria-label={a.label}
+                    title={a.label}
+                    onClick={() => setValue('accentColor', a.key)}
+                    w="28px"
+                    h="28px"
+                    borderRadius="full"
+                    bg={a.swatch}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    transition="box-shadow 0.15s"
+                    boxShadow={selected
+                      ? `0 0 0 2px var(--chakra-colors-surface-base), 0 0 0 4px ${a.swatch}`
+                      : 'none'}
+                    data-testid={`accent-swatch-${a.key}`}
+                  >
+                    {selected && <Check size={14} color="white" />}
+                  </Box>
+                )
+              })}
+            </HStack>
           </FormControl>
 
           {update.isError && (

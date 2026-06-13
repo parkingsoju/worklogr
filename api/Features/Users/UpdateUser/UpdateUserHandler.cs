@@ -20,8 +20,9 @@ public class UpdateUserHandler(AppDbContext db, ICurrentUser currentUser)
         if (cmd.DefaultLocationType is not null) user.DefaultLocationType = cmd.DefaultLocationType == "None" ? null : cmd.DefaultLocationType;
         if (cmd.WeekStartsOn is not null) user.WeekStartsOn = cmd.WeekStartsOn.Value;
         if (cmd.Theme is not null) user.Theme = cmd.Theme;
+        if (cmd.AccentColor is not null) user.AccentColor = cmd.AccentColor;
 
         await db.SaveChangesAsync(ct);
-        return new MeResult(user.Id, user.Name, user.Email, user.Timezone, user.DefaultLocationType, user.WeekStartsOn, user.Theme);
+        return new MeResult(user.Id, user.Name, user.Email, user.Timezone, user.DefaultLocationType, user.WeekStartsOn, user.Theme, user.AccentColor);
     }
 }

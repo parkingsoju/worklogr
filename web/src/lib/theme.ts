@@ -1,35 +1,22 @@
 import { extendTheme, type ThemeConfig } from '@chakra-ui/react'
+import { accents, type AccentScale } from './accents'
 
 const config: ThemeConfig = {
   initialColorMode: 'system',
   useSystemColorMode: true,
 }
 
-const colors = {
-  brand: {
-    50:  '#F0F7F6',
-    100: '#D5EBE8',
-    200: '#B8DAD6',
-    300: '#97C8C2',
-    400: '#7BB3AC',
-    500: '#5E9E97',
-    600: '#4A8880',
-    700: '#3A706A',
-    800: '#2B5955',
-    900: '#1C403C',
-  },
-  gray: {
-    50:  '#FAFAF8',
-    100: '#F0EDE8',
-    200: '#E5E0D8',
-    300: '#D0C9C0',
-    400: '#B0A89E',
-    500: '#8C8278',
-    600: '#6A6058',
-    700: '#4A4440',
-    800: '#2E2A26',
-    900: '#1A1714',
-  },
+const gray = {
+  50:  '#FAFAF8',
+  100: '#F0EDE8',
+  200: '#E5E0D8',
+  300: '#D0C9C0',
+  400: '#B0A89E',
+  500: '#8C8278',
+  600: '#6A6058',
+  700: '#4A4440',
+  800: '#2E2A26',
+  900: '#1A1714',
 }
 
 // Semantic tokens — single source for light/dark color pairs
@@ -114,4 +101,11 @@ const components = {
   },
 }
 
-export const theme = extendTheme({ config, colors, semanticTokens, radii, fonts, styles, components })
+// Theme factory — the accent (`brand`) scale is injected so the app can re-theme
+// per user (see ThemedChakraProvider in main.tsx). Everything else is fixed.
+export function makeTheme(brand: AccentScale) {
+  return extendTheme({ config, colors: { brand, gray }, semanticTokens, radii, fonts, styles, components })
+}
+
+// Default theme (teal) — used pre-auth and by the standalone toast in queryClient.ts.
+export const theme = makeTheme(accents.teal)
