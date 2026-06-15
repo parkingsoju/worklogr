@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { api, setToken, clearToken } from '@/lib/api'
+import { browserTz } from '@/lib/time'
 import type { LoginInput, RegisterInput, ForgotPasswordInput, ResetPasswordInput } from '@/lib/validations/auth'
 
 export function useLogin() {
@@ -14,7 +15,8 @@ export function useLogin() {
 
 export function useRegister() {
   return useMutation({
-    mutationFn: (data: RegisterInput) => api.post('/api/auth/register', data),
+    mutationFn: (data: RegisterInput) =>
+      api.post('/api/auth/register', { ...data, timezone: browserTz() }),
   })
 }
 

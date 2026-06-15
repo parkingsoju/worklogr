@@ -23,5 +23,10 @@ export const toUtc = (localDate: string, localTime: string, tz: string): string 
 export const todayLocal = (tz: string) =>
   formatInTimeZone(new Date(), tz, 'yyyy-MM-dd')
 
+// Device's IANA zone (e.g. "Asia/Manila"). Fallback for when the user's saved
+// timezone isn't loaded yet, and the default captured at signup.
+export const browserTz = () =>
+  Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Manila'
+
 export const formatDisplayDate = (isoDate: string) =>
   format(new Date(`${isoDate}T12:00:00`), 'EEEE, MMMM d, yyyy')

@@ -11,6 +11,7 @@ import { Check } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCurrentUser, type CurrentUser } from '@/hooks/useCurrentUser'
 import { api } from '@/lib/api'
+import { browserTz } from '@/lib/time'
 import { ACCENTS } from '@/lib/accents'
 
 export const Route = createFileRoute('/_app/settings')({
@@ -48,7 +49,7 @@ function SettingsPage() {
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<SettingsInput>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: { name: '', timezone: 'UTC', defaultLocationType: 'None', weekStartsOn: '1', theme: 'system', accentColor: 'teal' },
+    defaultValues: { name: '', timezone: browserTz(), defaultLocationType: 'None', weekStartsOn: '1', theme: 'system', accentColor: 'teal' },
   })
 
   useEffect(() => {

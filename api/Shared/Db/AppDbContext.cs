@@ -19,7 +19,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.Email).IsRequired();
             e.Property(x => x.Name).IsRequired();
             e.Property(x => x.PasswordHash).IsRequired();
-            e.Property(x => x.Timezone).HasDefaultValue("UTC");
+            e.Property(x => x.Timezone).HasDefaultValue("Asia/Manila");
             e.Property(x => x.WeekStartsOn).HasDefaultValue(1);
             e.Property(x => x.Theme).HasDefaultValue("system");
             e.Property(x => x.AccentColor).HasDefaultValue("teal");

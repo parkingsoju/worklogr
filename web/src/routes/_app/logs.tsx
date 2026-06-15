@@ -8,6 +8,7 @@ import { format } from 'date-fns'
 import { useLogs } from '@/hooks/useLogs'
 import { api } from '@/lib/api'
 import { formatInTimeZone } from 'date-fns-tz'
+import { browserTz } from '@/lib/time'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import * as XLSX from 'xlsx'
 
@@ -26,7 +27,7 @@ function LogsPage() {
   const [exporting, setExporting] = useState(false)
   const { data: logs, isLoading } = useLogs(undefined, undefined, status)
   const { data: me } = useCurrentUser()
-  const timezone = me?.timezone ?? 'UTC'
+  const timezone = me?.timezone ?? browserTz()
 
   const handleExport = async () => {
     setExporting(true)

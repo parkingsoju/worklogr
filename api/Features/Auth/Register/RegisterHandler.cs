@@ -22,9 +22,17 @@ public class RegisterHandler(AppDbContext db) : IRequestHandler<RegisterCommand,
             Name = cmd.Name,
             Email = email,
             PasswordHash = PasswordHasher.Hash(cmd.Password),
+            Timezone = ResolveTimezone(cmd.Timezone),
         };
         db.Users.Add(user);
         await db.SaveChangesAsync(ct);
         return new RegisterResult(user.Id, user.Name, user.Email);
     }
+
+    // Trust the browser-sent IANA zone, but never let a bad string through —
+    // FindSystemTimeZoneById throws on garbage, which would 500 the signup.
+    private static string ResolveTimezone(string? tz) =>
+        !string.IsNullOrWhiteSpace(tz) && TimeZoneInfo.TryFindSystemTimeZoneById(tz, out _)
+            ? tz
+            : "Asia/Manila";
 }

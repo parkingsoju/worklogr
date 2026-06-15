@@ -6,7 +6,7 @@ public class User
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
-    public string Timezone { get; set; } = "UTC";
+    public string Timezone { get; set; } = "Asia/Manila";
     public string? DefaultLocationType { get; set; }  // null = no default
     public int WeekStartsOn { get; set; } = 1;        // 1 = Monday, 0 = Sunday
     public string Theme { get; set; } = "system";

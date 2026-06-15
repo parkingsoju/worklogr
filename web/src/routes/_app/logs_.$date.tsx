@@ -12,7 +12,7 @@ import { SessionList } from '@/components/sessions/SessionList'
 import { SessionFormModal } from '@/components/sessions/SessionFormModal'
 import { ConfirmDeleteDialog } from '@/components/sessions/ConfirmDeleteDialog'
 import { DailyLogStatusBadge } from '@/components/DailyLogStatusBadge'
-import { formatDisplayDate, fmtDuration } from '@/lib/time'
+import { formatDisplayDate, fmtDuration, browserTz } from '@/lib/time'
 import type { SessionDto } from '@/lib/types'
 
 export const Route = createFileRoute('/_app/logs_/$date')({
@@ -23,7 +23,7 @@ function DailyLogDetailPage() {
   const { date } = Route.useParams()
   const { data: log, isLoading, isError, error } = useLogByDate(date)
   const { data: me } = useCurrentUser()
-  const timezone = me?.timezone ?? 'UTC'
+  const timezone = me?.timezone ?? browserTz()
 
   const markComplete = useMarkComplete()
   const reopenLog = useReopenLog()

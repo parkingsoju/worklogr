@@ -18,7 +18,7 @@ import { SessionFormModal } from '@/components/sessions/SessionFormModal'
 import { ConfirmDeleteDialog } from '@/components/sessions/ConfirmDeleteDialog'
 import { StaleSessionDialog } from '@/components/sessions/StaleSessionDialog'
 import { DailyLogStatusBadge } from '@/components/DailyLogStatusBadge'
-import { fmtDuration } from '@/lib/time'
+import { fmtDuration, browserTz } from '@/lib/time'
 import type { SessionDto } from '@/lib/types'
 
 export const Route = createFileRoute('/_app/')({
@@ -43,7 +43,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function TodayPage() {
   const { data: today, isLoading, isError, error } = useTodayLog()
   const { data: me } = useCurrentUser()
-  const timezone = me?.timezone ?? 'UTC'
+  const timezone = me?.timezone ?? browserTz()
 
   const markComplete = useMarkComplete()
   const reopenLog    = useReopenLog()
