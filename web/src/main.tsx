@@ -9,8 +9,17 @@ import { accentScale } from './lib/accents'
 import { queryClient, setErrorNotifier } from './lib/queryClient'
 import { useCurrentUser } from './hooks/useCurrentUser'
 import { useThemeSync } from './hooks/useTheme'
+import { BootPending } from './components/BootPending'
 
-const router = createRouter({ routeTree, trailingSlash: 'never' })
+// defaultPendingComponent renders while a route's beforeLoad/loader is in
+// flight (after defaultPendingMs) — covers the cold-start wake so the app never
+// shows a blank screen waiting on the `me` probe.
+const router = createRouter({
+  routeTree,
+  trailingSlash: 'never',
+  defaultPendingComponent: BootPending,
+  defaultPendingMs: 200,
+})
 
 declare module '@tanstack/react-router' {
   interface Register { router: typeof router }

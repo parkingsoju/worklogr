@@ -1,0 +1,26 @@
+name: keep-warm
+
+# Azure App Service free/shared tier spins the API down after idle, so the first
+# request cold-starts (~30s) and the app shows a "waking up" screen. Pinging
+# /health on a schedule keeps it awake during the day.
+#
+# Caveats: GitHub cron is best-effort (often delayed 5-15m under load) and the
+# workflow auto-disables after 60 days with no repo activity. For tighter timing,
+# an external pinger (UptimeRobot / cron-job.org) is more reliable.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # every 10 minutes
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping API health
+        # --max-time 90 so a genuine cold start has time to wake; `|| true` keeps
+        # a slow/failed wake from spamming failure notifications.
+        run: |
+          curl -fsS --max-time 90 \
+            https://worklogr-api-hxdhdmc2dhcfeyam.southeastasia-01.azurewebsites.net/health \
+            || true
