@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const startSessionSchema = z.object({
   locationType: z.enum(['Office', 'Remote', 'Other']),
   note: z.string().optional(),
+  startTime: z.string().optional(), // HH:mm local; empty = start now
 })
 export type StartSessionInput = z.infer<typeof startSessionSchema>
 

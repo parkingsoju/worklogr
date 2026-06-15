@@ -23,7 +23,24 @@ public class StartSessionHandler(AppDbContext db, ICurrentUser currentUser)
         if (hasActive) throw new ConflictException("You already have an active session. End it before starting a new one.");
 
         var now = DateTime.UtcNow;
-        var localDate = DailyLogService.LocalDateFor(now, user.Timezone);
+        var isManual = cmd.StartTime is not null;
+        var startTime = cmd.StartTime ?? now;
+
+        if (isManual)
+        {
+            if (startTime > now)
+                throw new ValidationException("Start time can't be in the future.");
+            if (DailyLogService.LocalDateFor(startTime, user.Timezone)
+                != DailyLogService.LocalDateFor(now, user.Timezone))
+                throw new ValidationException("Start time must be earlier today.");
+        }
+
+        var localDate = DailyLogService.LocalDateFor(startTime, user.Timezone);
+
+        // Rule 6: a backdated start can't fall inside an already-completed session today
+        if (isManual && await OverlapChecker.HasOverlapAsync(db, userId, localDate, startTime, now, ct: ct))
+            throw new ConflictException("This start time overlaps with an existing session.");
+
         var log = await DailyLogService.GetOrCreateAsync(db, userId, localDate, ct);
 
         var locationType = Enum.Parse<LocationType>(cmd.LocationType, ignoreCase: true);
@@ -32,9 +49,10 @@ public class StartSessionHandler(AppDbContext db, ICurrentUser currentUser)
             Id = Guid.NewGuid(),
             DailyLogId = log.Id,
             UserId = userId,
-            StartTime = now,
+            StartTime = startTime,
             LocationType = locationType,
             Note = cmd.Note,
+            StartTimeWasManual = isManual,
         };
         db.WorkSessions.Add(session);
         await db.SaveChangesAsync(ct);

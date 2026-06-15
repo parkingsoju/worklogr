@@ -9,6 +9,7 @@ public class WorkSession
     public DateTime? EndTime { get; set; }
     public LocationType LocationType { get; set; }
     public string? Note { get; set; }
+    public bool StartTimeWasManual { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

@@ -155,6 +155,7 @@ function TodayPage() {
             isOpen={startFormDisclosure.isOpen}
             onToggle={startFormDisclosure.onToggle}
             onClose={startFormDisclosure.onClose}
+            timezone={timezone}
           />
         </Box>
       )}

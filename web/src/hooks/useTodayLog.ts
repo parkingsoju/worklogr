@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { TodayData } from '@/lib/types'
 import type { StartSessionInput, SessionFormInput } from '@/lib/validations/session'
-import { toUtc } from '@/lib/time'
+import { toUtc, todayLocal } from '@/lib/time'
 
 const KEY = ['daily-log', 'today'] as const
 
@@ -15,10 +15,14 @@ function useInvalidateToday() {
   return () => qc.invalidateQueries({ queryKey: KEY })
 }
 
-export function useStartSession() {
+export function useStartSession(timezone: string) {
   const inv = useInvalidateToday()
   return useMutation({
-    mutationFn: (data: StartSessionInput) => api.post('/api/work-sessions/start', data),
+    mutationFn: (data: StartSessionInput) => api.post('/api/work-sessions/start', {
+      locationType: data.locationType,
+      note: data.note || null,
+      startTime: data.startTime ? toUtc(todayLocal(timezone), data.startTime, timezone) : null,
+    }),
     onSuccess: inv,
   })
 }

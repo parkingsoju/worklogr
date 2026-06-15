@@ -2,32 +2,40 @@ import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  Alert, AlertIcon, Box, Button, Collapse, FormControl, FormErrorMessage,
-  FormLabel, HStack, Radio, RadioGroup, Stack, Textarea, VStack,
+  Alert, AlertIcon, Box, Button, Checkbox, Collapse, FormControl, FormErrorMessage,
+  FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Stack, Textarea, VStack,
 } from '@chakra-ui/react'
 import { Plus } from 'lucide-react'
 import { startSessionSchema, type StartSessionInput } from '@/lib/validations/session'
 import { useStartSession } from '@/hooks/useTodayLog'
+import { toLocalTime } from '@/lib/time'
 
 interface Props {
   isOpen: boolean
   onToggle: () => void
   onClose: () => void
+  timezone: string
 }
 
-export function StartSessionForm({ isOpen, onToggle, onClose }: Props) {
-  const startSession = useStartSession()
+export function StartSessionForm({ isOpen, onToggle, onClose, timezone }: Props) {
+  const startSession = useStartSession(timezone)
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<StartSessionInput>({
     resolver: zodResolver(startSessionSchema),
     defaultValues: { locationType: 'Office' },
   })
   const locationType = watch('locationType')
+  const startTime = watch('startTime')
+  const backdate = startTime !== undefined
   const firstFocusRef = useRef<HTMLInputElement>(null)
 
   const onSubmit = (data: StartSessionInput) => {
     startSession.mutate(data, {
       onSuccess: () => { reset(); onClose() },
     })
+  }
+
+  const toggleBackdate = (checked: boolean) => {
+    setValue('startTime', checked ? toLocalTime(new Date().toISOString(), timezone) : undefined)
   }
 
   return (
@@ -68,6 +76,29 @@ export function StartSessionForm({ isOpen, onToggle, onClose }: Props) {
                 </Stack>
               </RadioGroup>
               <FormErrorMessage>{errors.locationType?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.startTime}>
+              <Checkbox
+                isChecked={backdate}
+                onChange={e => toggleBackdate(e.target.checked)}
+                data-testid="today-backdate-toggle"
+              >
+                I started earlier
+              </Checkbox>
+              {backdate && (
+                <Box mt={2}>
+                  <Input
+                    type="time"
+                    size="sm"
+                    maxW="160px"
+                    {...register('startTime')}
+                    data-testid="today-start-time-input"
+                  />
+                  <FormHelperText>When you actually started (earlier today).</FormHelperText>
+                  <FormErrorMessage>{errors.startTime?.message}</FormErrorMessage>
+                </Box>
+              )}
             </FormControl>
 
             <FormControl>
