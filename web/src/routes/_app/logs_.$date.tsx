@@ -5,9 +5,10 @@ import {
   HStack, Skeleton, Text, VStack,
 } from '@chakra-ui/react'
 import { ArrowLeft } from 'lucide-react'
-import { useLogByDate, useMarkComplete, useReopenLog, useDeleteLog } from '@/hooks/useLogs'
+import { useLogByDate, useMarkComplete, useReopenLog, useDeleteLog, useUpdateDailyNote } from '@/hooks/useLogs'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 
+import { InlineNote } from '@/components/InlineNote'
 import { SessionList } from '@/components/sessions/SessionList'
 import { SessionFormModal } from '@/components/sessions/SessionFormModal'
 import { ConfirmDeleteDialog } from '@/components/sessions/ConfirmDeleteDialog'
@@ -29,6 +30,7 @@ function DailyLogDetailPage() {
   const markComplete = useMarkComplete()
   const reopenLog = useReopenLog()
   const deleteLog = useDeleteLog()
+  const updateNote = useUpdateDailyNote()
   const [editTarget, setEditTarget] = useState<SessionDto | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<SessionDto | null>(null)
 
@@ -92,6 +94,19 @@ function DailyLogDetailPage() {
           />
         )}
       </Box>
+
+      {/* Daily note */}
+      {log?.dailyLogId && (
+        <Box>
+          <Text fontWeight="semibold" fontSize="sm" mb={3}>Daily note</Text>
+          <InlineNote
+            value={log.note}
+            onSave={note => updateNote.mutate({ id: log.dailyLogId!, note })}
+            isPending={updateNote.isPending}
+            isReadOnly={log.status === 'Complete'}
+          />
+        </Box>
+      )}
 
       {log?.status === 'Complete' && (
         <Alert status="info" borderRadius="md" size="sm">
