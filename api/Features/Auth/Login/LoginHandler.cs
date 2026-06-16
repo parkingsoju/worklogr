@@ -16,6 +16,8 @@ public class LoginHandler(AppDbContext db, JwtHelper jwt) : IRequestHandler<Logi
         if (user is null || !PasswordHasher.Verify(cmd.Password, user.PasswordHash))
             throw new UnauthorizedException("Invalid email or password.");
 
-        return new LoginResult(user.Id, user.Name, user.Email, user.Timezone, jwt.CreateToken(user));
+        return new LoginResult(
+            user.Id, user.Name, user.Email, user.Timezone,
+            user.DefaultLocationType, user.WeekStartsOn, user.Theme, user.AccentColor, jwt.CreateToken(user));
     }
 }
