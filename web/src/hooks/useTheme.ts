@@ -17,20 +17,19 @@ function resolveMode(theme: ThemePref): 'light' | 'dark' {
 // or changes. Server `me.theme` is the source of truth, so the choice follows the
 // user across devices. Pre-auth (no `me`) is a no-op.
 export function useThemeSync() {
-  const { data: me, isLoading } = useCurrentUser()
+  const { data: me } = useCurrentUser()
   const { colorMode, setColorMode } = useColorMode()
   useEffect(() => {
-    // Wait for the initial `me` probe so we don't flash the wrong mode on cold start.
-    if (isLoading) return
-    // Signed in: me.theme is source of truth. Logged out (me cleared): fall back to the
-    // app default so the login screen is predictable instead of keeping the last session's mode.
-    const target = resolveMode((me?.theme as ThemePref) ?? 'system')
+    // Logged out (me cleared) or still loading: leave color mode as-is. Light/dark is a
+    // device-level pref and is used on the login screen too, so it persists across logout.
+    // Accent resets to the default separately (ThemedChakraProvider, me?.accentColor -> teal).
+    if (!me?.theme) return
+    const target = resolveMode(me.theme as ThemePref)
     if (target !== colorMode) setColorMode(target)
-    // Re-runs on accentColor too: changing accent rebuilds the Chakra theme, which can reset
-    // color mode — re-applying here keeps it in sync. colorMode omitted so in-session toggles
-    // (which drive colorMode + persist via useSetTheme) aren't fought.
+    // accentColor in deps: changing accent rebuilds the Chakra theme (can reset color mode),
+    // so re-apply here to keep it in sync. colorMode omitted so in-session toggles aren't fought.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [me?.theme, me?.accentColor, isLoading])
+  }, [me?.theme, me?.accentColor])
 }
 
 // Sets the theme everywhere: applies it immediately AND persists to the server so it
