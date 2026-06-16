@@ -123,6 +123,24 @@ public class StartSessionHandlerTests
     }
 
     [Fact]
+    public async Task Rejects_when_todays_log_is_complete()
+    {
+        using var db = CreateDb();
+        var user = await SeedUser(db);
+        db.DailyLogs.Add(new DailyLog
+        {
+            Id = Guid.NewGuid(), UserId = user.Id,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow), Status = DailyLogStatus.Complete,
+        });
+        await db.SaveChangesAsync();
+
+        var handler = new StartSessionHandler(db, FakeUser(user.Id));
+        var act = () => handler.Handle(new StartSessionCommand("Office", null), default);
+
+        await act.Should().ThrowAsync<ConflictException>().WithMessage("*complete*");
+    }
+
+    [Fact]
     public async Task Rejects_backdated_start_overlapping_completed_session()
     {
         using var db = CreateDb();

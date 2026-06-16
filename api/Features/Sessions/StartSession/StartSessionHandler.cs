@@ -42,6 +42,8 @@ public class StartSessionHandler(AppDbContext db, ICurrentUser currentUser)
             throw new ConflictException("This start time overlaps with an existing session.");
 
         var log = await DailyLogService.GetOrCreateAsync(db, userId, localDate, ct);
+        if (log.Status == DailyLogStatus.Complete)
+            throw new ConflictException("This log is marked complete. Reopen it to make changes.");
 
         var locationType = Enum.Parse<LocationType>(cmd.LocationType, ignoreCase: true);
         var session = new WorkSession
