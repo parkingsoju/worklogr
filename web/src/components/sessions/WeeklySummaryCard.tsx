@@ -3,7 +3,7 @@ import { startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns'
 import { useLogs } from '@/hooks/useLogs'
 import { formatInTimeZone } from 'date-fns-tz'
 
-interface Props { timezone: string }
+interface Props { timezone: string; weekStartsOn: 0 | 1 }
 
 function fmtSecs(s: number) {
   if (!s) return '—'
@@ -11,11 +11,11 @@ function fmtSecs(s: number) {
   return h > 0 ? `${h}h ${m}m` : `${m}m`
 }
 
-export function WeeklySummaryCard({ timezone }: Props) {
+export function WeeklySummaryCard({ timezone, weekStartsOn }: Props) {
   const todayStr   = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd')
   const today      = new Date(todayStr + 'T12:00')
-  const weekStart  = startOfWeek(today, { weekStartsOn: 1 })
-  const weekEnd    = endOfWeek(today,   { weekStartsOn: 1 })
+  const weekStart  = startOfWeek(today, { weekStartsOn })
+  const weekEnd    = endOfWeek(today,   { weekStartsOn })
   const days       = eachDayOfInterval({ start: weekStart, end: weekEnd })
 
   const { data: logs } = useLogs(format(weekStart, 'yyyy-MM-dd'), format(weekEnd, 'yyyy-MM-dd'))

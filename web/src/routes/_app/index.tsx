@@ -246,7 +246,7 @@ function TodayPage() {
       )}
 
       {/* ── Weekly summary ───────────────────────────── */}
-      <WeeklySummaryCard timezone={timezone} />
+      <WeeklySummaryCard timezone={timezone} weekStartsOn={me?.weekStartsOn === 0 ? 0 : 1} />
 
       {/* ── Modals ───────────────────────────────────── */}
       <SessionFormModal
