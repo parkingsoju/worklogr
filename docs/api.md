@@ -49,6 +49,7 @@ GET /api/daily-logs/{date}
 PATCH /api/daily-logs/{id}  
 POST /api/daily-logs/{id}/complete  
 POST /api/daily-logs/{id}/reopen  
+DELETE /api/daily-logs/{id} — must belong to the current user; only if the log has no sessions and is not Complete (else 409)  
 
 ---
 

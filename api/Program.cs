@@ -17,6 +17,7 @@ using Worklogr.Api.Features.Logs.ReopenLog;
 using Worklogr.Api.Features.Logs.GetByDate;
 using Worklogr.Api.Features.Logs.GetLogs;
 using Worklogr.Api.Features.Logs.UpdateNote;
+using Worklogr.Api.Features.Logs.DeleteDailyLog;
 using Worklogr.Api.Features.Sessions.UpdateSessionNote;
 using Worklogr.Api.Features.Reports.GetSessionsExport;
 using Worklogr.Api.Features.Users.UpdateUser;
@@ -174,6 +175,7 @@ try
     app.MapGetByDate();
     app.MapMarkComplete();
     app.MapReopenLog();
+    app.MapDeleteDailyLog();
     app.MapStartSession();
     app.MapEndSession();
     app.MapAddManualSession();

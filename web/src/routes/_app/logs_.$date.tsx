@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import {
   Alert, AlertIcon, Box, Button, Divider, Flex, Heading,
   HStack, Skeleton, Text, VStack,
 } from '@chakra-ui/react'
 import { ArrowLeft } from 'lucide-react'
-import { useLogByDate, useMarkComplete, useReopenLog } from '@/hooks/useLogs'
+import { useLogByDate, useMarkComplete, useReopenLog, useDeleteLog } from '@/hooks/useLogs'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 
 import { SessionList } from '@/components/sessions/SessionList'
@@ -21,12 +21,14 @@ export const Route = createFileRoute('/_app/logs_/$date')({
 
 function DailyLogDetailPage() {
   const { date } = Route.useParams()
+  const navigate = useNavigate()
   const { data: log, isLoading, isError, error } = useLogByDate(date)
   const { data: me } = useCurrentUser()
   const timezone = me?.timezone ?? browserTz()
 
   const markComplete = useMarkComplete()
   const reopenLog = useReopenLog()
+  const deleteLog = useDeleteLog()
   const [editTarget, setEditTarget] = useState<SessionDto | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<SessionDto | null>(null)
 
@@ -125,6 +127,19 @@ function DailyLogDetailPage() {
                 Reopen Log
               </Button>
             )
+        )}
+
+        {/* Empty Draft day can be removed entirely (server guards: no sessions + not Complete). */}
+        {log?.dailyLogId && log.status === 'Draft' && (log.sessions?.length ?? 0) === 0 && (
+          <Button
+            colorScheme="red"
+            variant="outline"
+            size="sm"
+            isLoading={deleteLog.isPending}
+            onClick={() => deleteLog.mutate(log.dailyLogId!, { onSuccess: () => navigate({ to: '/logs' }) })}
+          >
+            Delete day
+          </Button>
         )}
       </HStack>
 

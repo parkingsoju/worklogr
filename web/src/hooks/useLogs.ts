@@ -63,3 +63,17 @@ export function useReopenLog() {
     },
   })
 }
+
+// Deletes a daily log. Server only allows it when the log is empty (no sessions)
+// and not Complete — see DeleteDailyLogHandler.
+export function useDeleteLog() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/api/daily-logs/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['daily-log', 'today'] })
+      qc.invalidateQueries({ queryKey: ['logs'] })
+      qc.invalidateQueries({ queryKey: ['log'] })
+    },
+  })
+}
