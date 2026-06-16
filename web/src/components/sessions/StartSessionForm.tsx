@@ -95,7 +95,7 @@ export function StartSessionForm({ isOpen, onToggle, onClose, timezone }: Props)
                     {...register('startTime')}
                     data-testid="today-start-time-input"
                   />
-                  <FormHelperText>When you actually started (earlier today).</FormHelperText>
+                  <FormHelperText>When you actually started (earlier today) — in {timezone}.</FormHelperText>
                   <FormErrorMessage>{errors.startTime?.message}</FormErrorMessage>
                 </Box>
               )}

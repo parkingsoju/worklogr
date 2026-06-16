@@ -5,7 +5,7 @@ import {
   Alert, AlertIcon, Button, FormControl, FormErrorMessage, FormLabel,
   HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent,
   ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack,
-  Textarea, VStack,
+  Text, Textarea, VStack,
 } from '@chakra-ui/react'
 import { sessionFormSchema, type SessionFormInput } from '@/lib/validations/session'
 import { useAddManualSession, useEditSession } from '@/hooks/useTodayLog'
@@ -86,6 +86,10 @@ export function SessionFormModal({ isOpen, onClose, timezone, editSession }: Pro
                 <FormErrorMessage>{errors.endTime?.message}</FormErrorMessage>
               </FormControl>
             </HStack>
+
+            <Text fontSize="xs" color="text.subtle" alignSelf="flex-start" mt={-2}>
+              Times in {timezone}
+            </Text>
 
             <FormControl isInvalid={!!errors.locationType}>
               <FormLabel>Where did you work?</FormLabel>
