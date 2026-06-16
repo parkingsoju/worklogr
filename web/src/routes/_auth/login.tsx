@@ -18,6 +18,7 @@ function LoginPage() {
   const login = useLogin()
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { email: localStorage.getItem('worklogr:lastEmail') ?? '' },
   })
 
   const onSubmit = (data: LoginInput) => {

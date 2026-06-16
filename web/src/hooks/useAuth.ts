@@ -8,6 +8,7 @@ export function useLogin() {
     mutationFn: async (data: LoginInput) => {
       const res = await api.post('/api/auth/login', data)
       setToken(res.token)
+      localStorage.setItem('worklogr:lastEmail', data.email)  // prefill next login (email only, never password)
       return res
     },
   })

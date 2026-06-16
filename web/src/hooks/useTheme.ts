@@ -17,16 +17,20 @@ function resolveMode(theme: ThemePref): 'light' | 'dark' {
 // or changes. Server `me.theme` is the source of truth, so the choice follows the
 // user across devices. Pre-auth (no `me`) is a no-op.
 export function useThemeSync() {
-  const { data: me } = useCurrentUser()
+  const { data: me, isLoading } = useCurrentUser()
   const { colorMode, setColorMode } = useColorMode()
   useEffect(() => {
-    if (!me?.theme) return
-    const target = resolveMode(me.theme as ThemePref)
+    // Wait for the initial `me` probe so we don't flash the wrong mode on cold start.
+    if (isLoading) return
+    // Signed in: me.theme is source of truth. Logged out (me cleared): fall back to the
+    // app default so the login screen is predictable instead of keeping the last session's mode.
+    const target = resolveMode((me?.theme as ThemePref) ?? 'system')
     if (target !== colorMode) setColorMode(target)
-    // colorMode intentionally omitted: only react to the saved preference changing,
-    // not to in-session toggles (which already drive colorMode + persist via useSetTheme).
+    // Re-runs on accentColor too: changing accent rebuilds the Chakra theme, which can reset
+    // color mode — re-applying here keeps it in sync. colorMode omitted so in-session toggles
+    // (which drive colorMode + persist via useSetTheme) aren't fought.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [me?.theme])
+  }, [me?.theme, me?.accentColor, isLoading])
 }
 
 // Sets the theme everywhere: applies it immediately AND persists to the server so it
