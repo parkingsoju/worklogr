@@ -14,13 +14,14 @@ export function InlineNote({ value, onSave, isPending, placeholder = 'Click to a
   const [draft,   setDraft]   = useState(value ?? '')
 
   if (isReadOnly) {
-    return <Text fontSize="sm" color={value ? 'text.muted' : 'text.subtle'}>{value || placeholder}</Text>
+    return <Text fontSize="sm" whiteSpace="pre-wrap" color={value ? 'text.muted' : 'text.subtle'}>{value || placeholder}</Text>
   }
 
   if (!editing) {
     return (
       <Text
         fontSize="sm"
+        whiteSpace="pre-wrap"
         color={value ? 'text.muted' : 'text.subtle'}
         cursor="text"
         onClick={() => { setDraft(value ?? ''); setEditing(true) }}
