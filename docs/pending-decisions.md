@@ -14,7 +14,7 @@
 
 # Purpose
 
-These are 25 implementation-level questions that will surface during coding. The proactive recommendations below are starting points — each still needs a final yes/no before it lands in the canonical spec docs.
+These are 26 implementation-level questions that will surface during coding. The proactive recommendations below are starting points — each still needs a final yes/no before it lands in the canonical spec docs.
 
 When a decision is made, move it out of this file into the appropriate spec doc, and delete the entry here. When this file is empty, delete the file.
 
@@ -123,6 +123,16 @@ Format per item: **question**, **recommendation**, **why**, **target doc** (wher
 **Why:** Personal app, single known user. Document as accepted gap. Revisit if/when the app opens to public sign-ups.
 
 **Lands in:** [backend.md](backend.md) Auth Implementation as a documented gap.
+
+---
+
+## 26. Personal API token for scripted access
+
+**Recommendation:** A long-lived, revocable personal API token accepted via `Authorization: Bearer` on read endpoints, alongside the existing cookie JWT. Reuse the existing JWT plumbing (`Shared/Auth/JwtHelper.cs`, `TokenHasher.cs`); store only the token's hash. MVP shape: one token per user, created/revoked via two small endpoints (or seeded manually).
+
+**Why:** Auth is an HTTP-only cookie (7-day JWT), which makes any scripted access — e.g. `curl /api/reports/sessions | jq` — require a cookie-jar login redone weekly. A bearer token turns that into a one-line pipe. Surfaced 2026-07-29: two independent Claude agents investigating a report-export idea both identified cookie-only auth as the real friction and this as the fix.
+
+**Lands in:** [backend.md](backend.md) Auth Implementation and [api.md](api.md).
 
 ---
 
