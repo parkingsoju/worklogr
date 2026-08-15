@@ -10,6 +10,12 @@ on:
   push:
     branches:
       - main
+    # Without this, every push to main redeploys the frontend — a docs-only
+    # commit triggered a full production deploy. api.yml filters the same way.
+    paths:
+      - 'web/**'
+      - '.github/workflows/azure-static-web-apps-lemon-pond-07852f000.yml'
+  workflow_dispatch: {}
 
 jobs:
   build_and_deploy_job:
